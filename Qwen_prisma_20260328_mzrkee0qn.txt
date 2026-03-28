@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum OrderType {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  PENDING
+  FILLED
+  CANCELLED
+  PARTIAL
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+  isVerified Boolean @default(false)
+  balances  Balance[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+model Balance {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  currency  String   // BTC, USDT, ETH
+  amount    Decimal  @db.Decimal(18, 8)
+  locked    Decimal  @db.Decimal(18, 8) @default(0) // Для ордеров
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, currency])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  pair      String      // BTC/USDT
+  type      OrderType
+  price     Decimal     @db.Decimal(18, 8)
+  amount    Decimal     @db.Decimal(18, 8)
+  filled    Decimal     @db.Decimal(18, 8) @default(0)
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+}
