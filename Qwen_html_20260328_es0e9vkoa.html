@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoExchange Pro - Торговая платформа</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>CryptoExchange<span class="accent">Pro</span></span>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="nav-link active">Торговля</a>
+                <a href="#" class="nav-link">Рынки</a>
+                <a href="#" class="nav-link">Биржа</a>
+                <a href="#" class="nav-link">Кошелек</a>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="balance-display">
+                    <span class="balance-label">Баланс:</span>
+                    <span class="balance-value" id="totalBalance">$10,245.80</span>
+                </div>
+                <button class="btn btn-primary" id="connectWallet">
+                    <i class="fas fa-wallet"></i> Подключить
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" class="user-avatar">
+                    <span class="user-name">User</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Market Ticker -->
+    <div class="market-ticker">
+        <div class="ticker-wrapper" id="tickerWrapper">
+            <!-- Ticker items will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Main Trading Interface -->
+    <main class="main-container">
+        <div class="container">
+            <div class="trading-grid">
+                
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <div class="panel-header">
+                        <div class="pair-selector">
+                            <h2 class="pair-name">BTC/USDT</h2>
+                            <span class="pair-price" id="currentPrice">$43,256.80</span>
+                            <span class="price-change positive" id="priceChange">+2.45%</span>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="timeframe-btn active" data-time="1m">1m</button>
+                            <button class="timeframe-btn" data-time="5m">5m</button>
+                            <button class="timeframe-btn" data-time="15m">15m</button>
+                            <button class="timeframe-btn" data-time="1h">1h</button>
+                            <button class="timeframe-btn" data-time="4h">4h</button>
+                            <button class="timeframe-btn" data-time="1d">1D</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tradingChart"></canvas>
+                    </div>
+                    <div class="chart-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">24h High</span>
+                            <span class="stat-value">$44,120.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Low</span>
+                            <span class="stat-value">$42,180.50</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value">1,245.67 BTC</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">24h Turnover</span>
+                            <span class="stat-value">$53.8M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Book -->
+                <div class="orderbook-section">
+                    <div class="panel-header">
+                        <h3>Биржевой стакан</h3>
+                    </div>
+                    <div class="orderbook-header">
+                        <span>Цена (USDT)</span>
+                        <span>Количество (BTC)</span>
+                        <span>Всего</span>
+                    </div>
+                    <div class="orderbook" id="orderbook">
+                        <!-- Asks (Sell orders) -->
+                        <div class="orderbook-asks" id="orderbookAsks"></div>
+                        
+                        <div class="orderbook-spread">
+                            <span class="spread-price" id="spreadPrice">43,256.80</span>
+                            <span class="spread-label">Spread: 0.02%</span>
+                        </div>
+                        
+                        <!-- Bids (Buy orders) -->
+                        <div class="orderbook-bids" id="orderbookBids"></div>
+                    </div>
+                </div>
+
+                <!-- Trading Form -->
+                <div class="trading-section">
+                    <div class="trade-tabs">
+                        <button class="trade-tab active" data-type="buy">Купить</button>
+                        <button class="trade-tab" data-type="sell">Продать</button>
+                    </div>
+                    
+                    <form class="trade-form" id="tradeForm">
+                        <div class="form-group">
+                            <label>Тип ордера</label>
+                            <select class="form-select" id="orderType">
+                                <option value="limit">Limit</option>
+                                <option value="market">Market</option>
+                                <option value="stop">Stop-Limit</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="priceGroup">
+                            <label>Цена (USDT)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-input" id="priceInput" placeholder="0.00" step="0.01">
+                                <span class="input-suffix">USDT</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Количество (BTC)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-input" id="amountInput" placeholder="0.00" step="0.0001">
+                                <span class="input-suffix">BTC</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Всего (USDT)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-input" id="totalInput" placeholder="0.00" readonly>
+                                <span class="input-suffix">USDT</span>
+                            </div>
+                        </div>
+                        
+                        <div class="slider-group">
+                            <label>Процент от баланса</label>
+                            <input type="range" class="slider" id="percentageSlider" min="0" max="100" value="0">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span>25%</span>
+                                <span>50%</span>
+                                <span>75%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="balance-info">
+                            <span>Доступно:</span>
+                            <span class="available-balance" id="availableBalance">10,245.80 USDT</span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-trade btn-buy" id="tradeButton">
+                            Купить BTC
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Trades -->
+            <div class="recent-trades">
+                <div class="panel-header">
+                    <h3>Последние сделки</h3>
+                    <div class="trade-filters">
+                        <button class="filter-btn active" data-filter="all">Все</button>
+                        <button class="filter-btn" data-filter="buy">Покупки</button>
+                        <button class="filter-btn" data-filter="sell">Продажи</button>
+                    </div>
+                </div>
+                <div class="trades-table">
+                    <div class="trades-header">
+                        <span>Время</span>
+                        <span>Цена (USDT)</span>
+                        <span>Количество (BTC)</span>
+                        <span>Всего (USDT)</span>
+                    </div>
+                    <div class="trades-body" id="tradesBody">
+                        <!-- Trades will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Orders -->
+            <div class="user-orders">
+                <div class="tabs">
+                    <button class="tab active" data-tab="open">Открытые ордера</button>
+                    <button class="tab" data-tab="history">История</button>
+                </div>
+                <div class="orders-content">
+                    <div class="orders-table" id="openOrders">
+                        <div class="orders-header">
+                            <span>Время</span>
+                            <span>Пара</span>
+                            <span>Тип</span>
+                            <span>Цена</span>
+                            <span>Количество</span>
+                            <span>Заполнено</span>
+                            <span>Действие</span>
+                        </div>
+                        <div class="orders-body" id="openOrdersBody">
+                            <!-- Orders will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>О платформе</h4>
+                    <p>CryptoExchange Pro - надежная платформа для торговли криптовалютами</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Поддержка</h4>
+                    <a href="#">Центр помощи</a>
+                    <a href="#">API документация</a>
+                    <a href="#">Комиссии</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <a href="#">support@cryptoexchange.pro</a>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CryptoExchange Pro. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Container -->
+    <div class="notifications" id="notifications"></div>
+
+    <script src="js/chart.js"></script>
+    <script src="js/orderbook.js"></script>
+    <script src="js/trading.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
