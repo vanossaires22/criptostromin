@@ -293,3 +293,44 @@ let app;
 document.addEventListener('DOMContentLoaded', () => {
     app = new CryptoExchange();
 });
+// Навигация
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Убираем active у всех ссылок
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        
+        // Добавляем active на текущую
+        this.classList.add('active');
+        
+        // Показываем нужную секцию
+        const page = this.textContent.trim();
+        showPage(page);
+    });
+});
+
+function showPage(pageName) {
+    // Скрываем все секции
+    document.querySelectorAll('.page-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Показываем нужную (пример)
+    const pageMap = {
+        'Торговля': 'trading-section',
+        'Рынки': 'markets-section',
+        'Биржа': 'exchange-section',
+        'Кошелек': 'wallet-section'
+    };
+    
+    const targetId = pageMap[pageName];
+    if (targetId) {
+        const target = document.getElementById(targetId);
+        if (target) {
+            target.style.display = 'block';
+        } else {
+            alert(`Страница "${pageName}" пока в разработке`);
+        }
+    }
+}
